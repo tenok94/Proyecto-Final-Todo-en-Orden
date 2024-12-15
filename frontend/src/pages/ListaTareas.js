@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, List, ListItem, ListItemText, Button, TextField, Box } from "@mui/material";
+import { Container, Typography, List, ListItem, ListItemText, Button, TextField, Box} from "@mui/material";
 import { getTareas } from "../services/api";
 import axios from "axios";
 import AgregarTarea from "../components/AgregarTarea";
 
 const ListaTareas = () => {
   const [tareas, setTareas] = useState([]);
-  const [editando, setEditando] = useState(null); 
+  const [editando, setEditando] = useState(null);
   const [nuevaPrioridad, setNuevaPrioridad] = useState("");
   const [nuevoEstado, setNuevoEstado] = useState("");
 
@@ -20,17 +20,27 @@ const ListaTareas = () => {
     cargarTareas();
   }, []);
 
-  //actualizar la tarea
+  // Función para actualizar una tarea
   const actualizarTarea = async (id) => {
     try {
       await axios.put(`http://localhost:3000/tareas/${id}`, {
         prioridad: nuevaPrioridad,
         estado: nuevoEstado,
       });
-      setEditando(null); // Salir del modo edición
-      cargarTareas(); // Recargar la lista
+      setEditando(null);
+      cargarTareas();
     } catch (error) {
       console.error("Error al actualizar tarea:", error);
+    }
+  };
+
+  // Función para eliminar una tarea
+  const eliminarTarea = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/tareas/${id}`);
+      cargarTareas(); // Recargar la lista después de eliminar
+    } catch (error) {
+      console.error("Error al eliminar tarea:", error);
     }
   };
 
@@ -47,21 +57,15 @@ const ListaTareas = () => {
       <List>
         {tareas.map((tarea) => (
           <ListItem key={tarea._id} divider>
-            <ListItemText
-              primary={`Tarea: ${tarea.tarea}`}
-              secondary={`Prioridad: ${tarea.prioridad} | Estado: ${tarea.estado}`}
-            />
-
-            {/* Botón de edición */}
             {editando === tarea._id ? (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 <TextField
                   label="Nueva Prioridad"
                   variant="outlined"
                   size="small"
                   value={nuevaPrioridad}
                   onChange={(e) => setNuevaPrioridad(e.target.value)}
-                  placeholder="Alta, Media, Baja"
+                  placeholder="Alta, Media o Baja"
                 />
                 <TextField
                   label="Nuevo Estado"
@@ -71,17 +75,50 @@ const ListaTareas = () => {
                   onChange={(e) => setNuevoEstado(e.target.value)}
                   placeholder="Pendiente, En Progreso, Completado"
                 />
-                <Button variant="contained" color="primary" onClick={() => actualizarTarea(tarea._id)}>
-                  Guardar
-                </Button>
-                <Button variant="outlined" color="secondary" onClick={() => setEditando(null)}>
-                  Cancelar
-                </Button>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => actualizarTarea(tarea._id)}
+                  >
+                    Guardar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => setEditando(null)}
+                  >
+                    Cancelar
+                  </Button>
+                </Box>
               </Box>
             ) : (
-              <Button variant="contained" onClick={() => setEditando(tarea._id)}>
-                Editar
-              </Button>
+              <>
+                <ListItemText
+                  primary={`Tarea: ${tarea.tarea}`}
+                  secondary={`Prioridad: ${tarea.prioridad} | Estado: ${tarea.estado}`}
+                />
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setEditando(tarea._id);
+                      setNuevaPrioridad(tarea.prioridad);
+                      setNuevoEstado(tarea.estado);
+                    }}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => eliminarTarea(tarea._id)}
+                  >
+                    Eliminar
+                  </Button>
+                </Box>
+              </>
             )}
           </ListItem>
         ))}
@@ -91,5 +128,4 @@ const ListaTareas = () => {
 };
 
 export default ListaTareas;
-
 
