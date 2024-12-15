@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, List, ListItem, ListItemText, Button, TextField, Box} from "@mui/material";
+import {
+  Container,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  TextField,
+  Box,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { getTareas } from "../services/api";
 import axios from "axios";
 import AgregarTarea from "../components/AgregarTarea";
@@ -10,37 +21,47 @@ const ListaTareas = () => {
   const [nuevaPrioridad, setNuevaPrioridad] = useState("");
   const [nuevoEstado, setNuevoEstado] = useState("");
 
+  // Estado para el Snackbar (feedback visual)
+  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const cargarTareas = () => {
     getTareas()
       .then((data) => setTareas(data))
-      .catch((error) => console.error("Error al obtener tareas:", error));
+      .catch(() => mostrarMensaje("Error al obtener las tareas", "error"));
   };
 
   useEffect(() => {
     cargarTareas();
   }, []);
 
-  // Función para actualizar una tarea
+  // Función para mostrar el feedback visual
+  const mostrarMensaje = (texto, tipo) => {
+    setMensaje({ texto, tipo });
+    setOpenSnackbar(true);
+  };
+
   const actualizarTarea = async (id) => {
     try {
       await axios.put(`http://localhost:3000/tareas/${id}`, {
         prioridad: nuevaPrioridad,
         estado: nuevoEstado,
       });
+      mostrarMensaje("Tarea actualizada correctamente", "success");
       setEditando(null);
       cargarTareas();
     } catch (error) {
-      console.error("Error al actualizar tarea:", error);
+      mostrarMensaje("Error al actualizar la tarea", "error");
     }
   };
 
-  // Función para eliminar una tarea
   const eliminarTarea = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/tareas/${id}`);
-      cargarTareas(); // Recargar la lista después de eliminar
+      mostrarMensaje("Tarea eliminada correctamente", "success");
+      cargarTareas();
     } catch (error) {
-      console.error("Error al eliminar tarea:", error);
+      mostrarMensaje("Error al eliminar la tarea", "error");
     }
   };
 
@@ -51,7 +72,12 @@ const ListaTareas = () => {
       </Typography>
 
       {/* Formulario para agregar tarea */}
-      <AgregarTarea onTareaAgregada={cargarTareas} />
+      <AgregarTarea
+        onTareaAgregada={() => {
+          cargarTareas();
+          mostrarMensaje("Tarea agregada correctamente", "success");
+        }}
+      />
 
       {/* Lista de tareas */}
       <List>
@@ -65,7 +91,6 @@ const ListaTareas = () => {
                   size="small"
                   value={nuevaPrioridad}
                   onChange={(e) => setNuevaPrioridad(e.target.value)}
-                  placeholder="Alta, Media o Baja"
                 />
                 <TextField
                   label="Nuevo Estado"
@@ -73,7 +98,6 @@ const ListaTareas = () => {
                   size="small"
                   value={nuevoEstado}
                   onChange={(e) => setNuevoEstado(e.target.value)}
-                  placeholder="Pendiente, En Progreso, Completado"
                 />
                 <Box sx={{ display: "flex", gap: 1 }}>
                   <Button
@@ -123,9 +147,24 @@ const ListaTareas = () => {
           </ListItem>
         ))}
       </List>
+
+      {/* Feedback visual con Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={mensaje.tipo}
+          sx={{ width: "100%" }}
+        >
+          {mensaje.texto}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
 export default ListaTareas;
-
