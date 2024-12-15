@@ -1,0 +1,20 @@
+{
+  "name": "api_todo_en_orden",
+  "version": "1.0.0",
+  "description": "Trabajo final de la materia Mongoose-Express-Node",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
