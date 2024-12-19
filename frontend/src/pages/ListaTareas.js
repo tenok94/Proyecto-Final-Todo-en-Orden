@@ -11,60 +11,55 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { getTareas } from "../services/api";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchTareas, deleteTarea, updateTarea } from "../redux/tasksSlice";
 import AgregarTarea from "../components/AgregarTarea";
 
 const ListaTareas = () => {
-  const [tareas, setTareas] = useState([]);
-  const [editando, setEditando] = useState(null);
+  const dispatch = useDispatch();
+  const { tareas, status, error } = useSelector((state) => state.tareas);
+
+  const [editando, setEditando] = useState(null); // Estado para manejar el modo de edición
   const [nuevaPrioridad, setNuevaPrioridad] = useState("");
   const [nuevoEstado, setNuevoEstado] = useState("");
 
-  // Estado para el Snackbar (feedback visual)
-  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
 
-  const cargarTareas = () => {
-    getTareas()
-      .then((data) => setTareas(data))
-      .catch(() => mostrarMensaje("Error al obtener las tareas", "error"));
-  };
-
-  useEffect(() => {
-    cargarTareas();
-  }, []);
-
-  // Función para mostrar el feedback visual
   const mostrarMensaje = (texto, tipo) => {
     setMensaje({ texto, tipo });
     setOpenSnackbar(true);
   };
 
-  const actualizarTarea = async (id) => {
-    try {
-      await axios.put(`http://localhost:3000/tareas/${id}`, {
-        prioridad: nuevaPrioridad,
-        estado: nuevoEstado,
-      });
-      mostrarMensaje("Tarea actualizada correctamente", "success");
-      setEditando(null);
-      cargarTareas();
-    } catch (error) {
-      mostrarMensaje("Error al actualizar la tarea", "error");
-    }
+  // Cargar tareas al montar el componente
+  useEffect(() => {
+    dispatch(fetchTareas());
+  }, [dispatch]);
+
+  const handleEliminarTarea = (id) => {
+    dispatch(deleteTarea(id))
+      .then(() => mostrarMensaje("Tarea eliminada correctamente", "success"))
+      .catch(() => mostrarMensaje("Error al eliminar la tarea", "error"));
   };
 
-  const eliminarTarea = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/tareas/${id}`);
-      mostrarMensaje("Tarea eliminada correctamente", "success");
-      cargarTareas();
-    } catch (error) {
-      mostrarMensaje("Error al eliminar la tarea", "error");
-    }
+  const handleActualizarTarea = (id) => {
+    dispatch(
+      updateTarea({
+        id,
+        tareaActualizada: { prioridad: nuevaPrioridad, estado: nuevoEstado },
+      })
+    )
+      .then((result) => {
+        const tareaActualizada = result.payload; // La respuesta del backend
+        mostrarMensaje("Tarea actualizada correctamente", "success");
+  
+        // Actualizar el estado global directamente
+        dispatch(fetchTareas()); // Opcional, si prefieres recargar desde el backend
+        setEditando(null);
+      })
+      .catch(() => mostrarMensaje("Error al actualizar la tarea", "error"));
   };
-
+  
   return (
     <Container>
       <Typography variant="h3" gutterBottom>
@@ -74,10 +69,16 @@ const ListaTareas = () => {
       {/* Formulario para agregar tarea */}
       <AgregarTarea
         onTareaAgregada={() => {
-          cargarTareas();
+          dispatch(fetchTareas());
           mostrarMensaje("Tarea agregada correctamente", "success");
         }}
       />
+
+      {/* Estado de carga */}
+      {status === "loading" && <Typography>Cargando tareas...</Typography>}
+      {status === "failed" && (
+        <Typography color="error">Error: {error}</Typography>
+      )}
 
       {/* Lista de tareas */}
       <List>
@@ -91,6 +92,7 @@ const ListaTareas = () => {
                   size="small"
                   value={nuevaPrioridad}
                   onChange={(e) => setNuevaPrioridad(e.target.value)}
+                  placeholder="Alta, Media o Baja"
                 />
                 <TextField
                   label="Nuevo Estado"
@@ -98,12 +100,13 @@ const ListaTareas = () => {
                   size="small"
                   value={nuevoEstado}
                   onChange={(e) => setNuevoEstado(e.target.value)}
+                  placeholder="Pendiente, En Progreso, Completado"
                 />
                 <Box sx={{ display: "flex", gap: 1 }}>
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => actualizarTarea(tarea._id)}
+                    onClick={() => handleActualizarTarea(tarea._id)}
                   >
                     Guardar
                   </Button>
@@ -137,7 +140,7 @@ const ListaTareas = () => {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => eliminarTarea(tarea._id)}
+                    onClick={() => handleEliminarTarea(tarea._id)}
                   >
                     Eliminar
                   </Button>
@@ -168,3 +171,4 @@ const ListaTareas = () => {
 };
 
 export default ListaTareas;
+

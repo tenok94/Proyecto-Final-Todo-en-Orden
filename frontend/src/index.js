@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Provider } from "react-redux"; // Importa el Provider de Redux
+import { store } from "./redux/store"; // Importa el store configurado
 
 const theme = createTheme({
   palette: {
@@ -13,9 +15,11 @@ const theme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ThemeProvider theme={theme}>
-    <App />
-  </ThemeProvider>
+  <Provider store={store}>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  </Provider>
 );
 
 
