@@ -12,7 +12,7 @@ const AgregarTarea = ({ onTareaAgregada }) => {
     e.preventDefault();
     try {
       // Enviar la nueva tarea al backend
-      await axios.post("http://localhost:3000/tareas", {
+      await axios.post(process.env.REACT_APP_BASE_URL, {
         tarea,
         descripcion,
         prioridad,
