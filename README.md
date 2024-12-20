@@ -38,3 +38,15 @@ Tareas
     - Actualiza una tarea existente.
 4. DELETE /tareas/:id
     - Elimina una tarea.
+
+📸 Capturas de Pantalla
+Página Principal
+![Formulario para Agregar Tareas.](./images/app.png)
+
+🔄 Flujo de Trabajo
+El usuario ingresa al sistema y visualiza la lista de tareas cargadas desde el backend.
+El usuario puede:
+Agregar nuevas tareas mediante un formulario.
+Editar tareas existentes.
+Eliminar tareas que ya no son necesarias.
+La información se sincroniza en tiempo real con el backend.
