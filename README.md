@@ -28,7 +28,7 @@ frontend/
 ├── package.json           # Dependencias y scripts del proyecto
 ├── README.md              # Este archivo
 ```
-🔗 Endpoints Consumidos
+##  🔗 Endpoints Consumidos
 Tareas
 1. GET /tareas
     - Obtiene la lista de todas las tareas.
@@ -39,14 +39,30 @@ Tareas
 4. DELETE /tareas/:id
     - Elimina una tarea.
 
-📸 Capturas de Pantalla
+##  📸 Capturas de Pantalla
 Página Principal
 ![Formulario para Agregar Tareas.](./images/app.png)
 
-🔄 Flujo de Trabajo
-El usuario ingresa al sistema y visualiza la lista de tareas cargadas desde el backend.
-El usuario puede:
-Agregar nuevas tareas mediante un formulario.
-Editar tareas existentes.
-Eliminar tareas que ya no son necesarias.
-La información se sincroniza en tiempo real con el backend.
+##  🔄 Flujo de Trabajo
+1. El usuario ingresa al sistema y visualiza la lista de tareas cargadas desde el backend.
+2. El usuario puede:
+- Agregar nuevas tareas mediante un formulario.
+- Editar tareas existentes.
+- Eliminar tareas que ya no son necesarias.
+3. La información se sincroniza en tiempo real con el backend.
+
+##  🏗 Cómo Correr el Proyecto
+1. Clonar el Repo:
+   ```
+    https://github.com/tenok94/Proyecto-Final-Todo-en-Orden-Frontend.git
+   ```
+2. Instalar Dependencias:
+    ```
+    npm install
+    ```
+3. Iniciar el servidor de desarrollo:
+   ```
+    npm start
+   ```
+## 🌐 URL de Despliegue
+** [Frontend Desplegado en Vercel](https://proyecto-final-todo-en-orden-frontend-qqsokhan6.vercel.app/)
