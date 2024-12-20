@@ -27,11 +27,14 @@ frontend/
 ├── .env                   # Variables de entorno (excluido del repositorio)
 ├── package.json           # Dependencias y scripts del proyecto
 ├── README.md              # Este archivo
-
-REACT_APP_BASE_URL=http://tu-backend-url
-Iniciar el servidor de desarrollo:
-bash
-Copiar código
-npm start
-🌐 URL de Despliegue
-Frontend Desplegado en Vercel
+```
+🔗 Endpoints Consumidos
+Tareas
+1. GET /tareas
+    - Obtiene la lista de todas las tareas.
+2. POST /tareas
+    - Crea una nueva tarea.
+3. PUT /tareas/:id
+    - Actualiza una tarea existente.
+4. DELETE /tareas/:id
+    - Elimina una tarea.
